@@ -431,9 +431,7 @@ function releaseNote(x,y)
             clock.run(
             function()
                 clock.sleep(params:get("sustain") * clock.get_beats() / 256)
-                print('hello!')
                 m:note_off(heldNotes[i][x][y], 0, i)
-                print("off", heldNotes[i][x][y], 0, i)
                 heldNotes[i][x][y] = nil
             end)
         end
@@ -634,9 +632,10 @@ function init()
 end
 
 ----grid stuff!
-function g.key(x, y, z)
+function g.key(x, y, z, dup)
 
-    if y <= 6 and x >= 12 then
+    if y <= 6 and x >= 12 and dup ~= 1 then
+        print(dup)
         record_grid_value(x,y,z)
     end
 
@@ -749,7 +748,6 @@ function holdForArp(pitch, vel)
     table.insert(heldInArp, pitch  - 12 + params:get("octaveOffset") * 12)
     while #heldInArp > params:get("arpLength") do
         m:note_off(heldInArp[1], 0, 5)
-        print('it is happening!')
         table.remove(heldInArp, 1)
     end
     m:note_on(heldInArp[#heldInArp],vel,5)
@@ -765,7 +763,7 @@ end
 
 function record_grid_value(x, y, z)
     noteKey = 10 - ((x + 2) % 3) + (6 - y) * 3
-  grid_pattern:watch(
+    grid_pattern:watch(
     {
       ["index"] = noteKey,
       ["scale"] = currentPentad,
@@ -778,8 +776,7 @@ function record_grid_value(x, y, z)
 end
 
 function parse_grid_pattern(data)
-  tab.print(data)
-  g.key(data.x, data.y, data.z)
+  g.key(data.x, data.y, data.z, 1)
   screen_dirty = true
 end
 
